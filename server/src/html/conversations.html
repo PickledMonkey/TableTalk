@@ -1,38 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>TableTalk</title>
+        <title>TableTalk Conversations</title>
         <meta http-equiv="x-ua-compatible" content="ie=edge">
 	    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,800">
         <link rel='stylesheet' href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
         <link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
-        <!-- <link rel="stylesheet" type="text/css" href="css/style.css"> -->
     </head>
 
     <body>
-
+        <h1 id="playerName"></h1> 
         <div class="container-fluid">
-            <div class="row h-2">
-            </div>
-            <div class="row h-6" id="userInputForm">
-                <div class="col d-block center mx-auto">
-                    <button id="dmSelectButton" class="btn btn-primary btn-lg">Dungeon Master</button>
-                </div>
-                <div class="col d-block center mx-auto">
-                    <button id="playerSelectButton" class="btn btn-secondary btn-lg">Player</button>
-                </div>
-            </div>
-            <div class="row h-2">
-                <div class="col"></div>
-            </div>
+            <ul class="list-group" id="conversationList">
+              <li class="list-group-item">Conversation1</li>
+              <li class="list-group-item">Conversation2</li>
+              <li class="list-group-item">Conversation3</li>
+            </ul>
         </div>
 
         <script type="application/javascript" src="/js/jquery.min.js"></script>
         <script type="application/javascript" src="/js/tether.min.js"></script>
         <script type="application/javascript" src="/js/bootstrap.min.js"></script>
-
-        <script type="application/javascript" src="/js/homepage_handler.js"></script>
     </body>
 </html>
