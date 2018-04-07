@@ -1,0 +1,11 @@
+<form id="newConversationForm" class="form-group" >
+  <label for="topicName">Topic Name</label>
+  <select name="players" multiple>
+  	<% players.forEach(function(player) { %>
+        <option><%= player %></option>
+    <% }); %>
+  </select>
+  <input type="text" class="form-control" id="topicName" name="topicName" aria-describedby="topicNameHelp" placeholder="Enter Topic Name">
+  <small id="topicNameHelp" class="form-text text-muted">Enter the name for the conversation topic</small>
+  <button type="submit" class="btn btn-primary">Start Conversation</button>
+</form>

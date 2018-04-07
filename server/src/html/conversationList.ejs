@@ -1,0 +1,14 @@
+<% conversations.forEach(function(conversation) { %>
+<li class="list-group-item list-group-item-action" id=<%= 'topicID_' + conversation.topic %>>
+	<div class="col h3"><%= conversation.topic %></div>
+	<div class="col">
+		<ul class="list-group">
+
+	<%conversation.players.forEach(function(player) { %>
+			<li class="list-group-item"><%=player%></li>
+	<% }); %>
+
+		</ul>
+	</div>
+</li>
+<% }); %>
