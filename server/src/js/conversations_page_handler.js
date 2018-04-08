@@ -22,11 +22,7 @@ $(document).ready(function(){
     }
     updateConversationList();
 
-    $("#newConversationForm").submit(function(){
-        alert("Submitted but not doing anything yet");
-    });
-
-    $("#formEntry").delegate('#startConversationButton', 'click', function(event)
+    $("#formEntry").on('click', '#startConversationButton', function(event)
     {
         $.get('/html/startConversationForm.ejs', function(template)
         {
@@ -35,12 +31,16 @@ $(document).ready(function(){
         });
     });
 
-
-    $("#formEntry").delegate('#newConversationForm', 'submit', function(event)
+    $("#formEntry").on('submit', '#newConversationForm',  function(event)
     {
         event.preventDefault();
         alert('Make a new conversation');
         writeFormEntryButton();
+    });
+
+    $("#conversationList").on('click', 'li', function()
+    {
+        window.location.href= 'chat/'+$(this).attr('id');
     });
     
 });

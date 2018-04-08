@@ -62,6 +62,11 @@ gulp.task('serve', ['sass'], function() {
 	app.post('/dmConversations/', function (req, res) {
 		res.render('pages/conversations', req.body);
 	});
+///users/:userId/books/:bookId
+//https://expressjs.com/en/guide/routing.html
+	app.get('/dmConversations/chat/:topic/', function(req, res) {
+		res.render('pages/chat', req.params);
+	});
 
 	http.listen(3000, function(){
 	  console.log('listening on *:3000');
