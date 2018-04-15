@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>TableTalk Conversations</title>
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      
+        <link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
+    </head>
+
+    <body>
+        <h1 id="playerName"><%= username %></h1>
+        <div class="d-block center mx-auto" id="formEntry">
+        </div>
+        <div class="container-fluid">
+            <ul class="list-group" id="conversationList">
+            </ul>
+        </div>
+
+        <script type="application/javascript" src="/js/jquery.min.js"></script>
+        <script type="application/javascript" src="/js/tether.min.js"></script>
+        <script type="application/javascript" src="/js/bootstrap.min.js"></script>
+        <script type="application/javascript" src="/js/ejs.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        
+        <script type="application/javascript" src="/js/conversations_page_handler.js"></script>
+    </body>
+</html>

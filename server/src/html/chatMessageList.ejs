@@ -1,0 +1,21 @@
+<div class="container-fluid">
+<% conversation.messages.forEach(function(message) { %>
+	<% if (message.player == conversation.dungeonMaster) { %>
+
+	<div class="container">
+		<h4 class="text-left"><strong><%= message.player %></strong></h4>
+		<p><%= message.message %></p>
+		<span class="time-left"><%= message.time %></span>
+	</div>
+
+	<% } else { %>
+
+	<div class="container darker">
+		<h4 class="text-left"><%= message.player %></h4>
+		<p><%= message.message %></p>
+		<span class="time-left"><%= message.time %></span>
+	</div>
+
+	<% } %>
+<% }); %>
+</div>
