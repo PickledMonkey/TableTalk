@@ -7,7 +7,9 @@ var app = express();
 var http = require('http').Server(app);
 var bodyParser = require('body-parser');
 var io = require('socket.io')(http);
+var middleware = require('socketio-wildcard')();
 
+io.use(middleware);
 
 var allPlayersList = ['Player1', 'Player2', 'Player3', 'Player4'];
 var dmConversationsList = [
@@ -88,7 +90,7 @@ gulp.task('serve', ['sass'], function() {
 	});
 	
 	app.post('/playerConversations/', function (req, res) {
-		alert("Not Implemented");
+		console.log("Not Implemented");
 	});
 
 	app.post('/dmConversations/', function (req, res) {
@@ -101,20 +103,29 @@ gulp.task('serve', ['sass'], function() {
 	});
 
 	io.on('connection', function(socket) {
+		console.log('Connected');
 		socket.on('getFullPlayerList', function() {
 			io.emit('getFullPlayerList', allPlayersList);
 		});
 
 		socket.on('getConversationsList', function() {
 			io.emit('getConversationsList', dmConversationsList);
+			console.log('sent chats');
 		});
 
 		socket.on('startConversation', function(msg) {
-			alert('Make a new conversation');
+			console.log('Make a new conversation');
 		});
 
 		socket.on('getConversationInfo', function(msg) {
 			io.emit('getConversationInfo', messageList['Topic1']);
+		});
+		socket.on('add user', function(msg){
+			console.log('adding',msg);
+			io.emit('userAdded', msg);
+		});
+		socket.on("*",function(event,msg){
+			console.log(event,msg);
 		});
 	});
 
