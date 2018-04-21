@@ -108,8 +108,9 @@ gulp.task('serve', ['sass'], function() {
 			io.emit('getFullPlayerList', allPlayersList);
 		});
 
-		socket.on('getConversationsList', function() {
-			io.emit('getConversationsList', dmConversationsList);
+		socket.on('getConversationsList', function(msg) {
+			console.log('trying to send chats');
+			io.emit('sendConversationsList', dmConversationsList);
 			console.log('sent chats');
 		});
 
@@ -118,7 +119,9 @@ gulp.task('serve', ['sass'], function() {
 		});
 
 		socket.on('getConversationInfo', function(msg) {
-			io.emit('getConversationInfo', messageList['Topic1']);
+			console.log('trying to send conversation info');
+			io.emit('sendConversationInfo', messageList['Topic1']);
+			console.log('sent conversation info');
 		});
 		socket.on('add user', function(msg){
 			console.log('adding',msg);
