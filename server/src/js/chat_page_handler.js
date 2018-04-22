@@ -35,7 +35,7 @@ $(document).ready(function(){
     }
 
     // newMessage
-    socket.on('newMessage', function(msg) {
+    socket.on('newMessageAdded', function(msg) {
         conversation.messages.push(msg);
         updateChatMessageList();
     });
@@ -57,7 +57,7 @@ $(document).ready(function(){
     });
 
     // getConversationInfo
-    socket.on('getConversationInfo', function(msg) {
+    socket.on('sendConversationInfo', function(msg) {
         conversation = msg;
         updatePlayerList();   
         updateChatMessageList();

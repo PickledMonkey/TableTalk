@@ -157,7 +157,7 @@ gulp.task('serve', ['sass'], function() {
 			var allPlayersCursor = mongoDB.collection(playerCollectionName).find({}).project({_id:0, conversations:0});
 			allPlayersCursor.toArray(function(err, result){
 				if (err) throw err;
-				socket.emit('getFullPlayerList', result);
+				socket.emit('sendFullPlayerList', result);
 			});
 		});
 
@@ -172,7 +172,7 @@ gulp.task('serve', ['sass'], function() {
 				conversations.toArray(function(err, result){
 					if (err) throw err;
 
-					socket.emit('getConversationsList', result);
+					socket.emit('sendConversationsList', result);
 				});
 			}).catch(function(error) {
 				console.log(error);
@@ -193,7 +193,7 @@ gulp.task('serve', ['sass'], function() {
 
 	   				if (player in playerSockets)
 					{
-						socket.broadcast.to(playerSockets[player]).emit('newConversation', msg);
+						socket.broadcast.to(playerSockets[player]).emit('newConversationAdded', msg);
 					}	
 				}
 
@@ -202,7 +202,7 @@ gulp.task('serve', ['sass'], function() {
    				{ $push: { conversations: res.ops[0]._id}});
    				if (msg.dungeonMaster in playerSockets)
 				{
-					socket.broadcast.to(msg.dungeonMaster).emit('newConversation', msg);
+					socket.broadcast.to(msg.dungeonMaster).emit('newConversationAdded', msg);
 				}
 			});
 		});
@@ -211,14 +211,12 @@ gulp.task('serve', ['sass'], function() {
 		socket.on('getConversationInfo', function(msg) {
 			var topicObjectId = new ObjectId(msg.topic_id);
 			conversation = mongoDB.collection(conversationCollectionName).findOne({_id: topicObjectId}).then(function(conversation) {
-				socket.emit('getConversationInfo', conversation);
+				socket.emit('sendConversationInfo', conversation);
 			});
 		});
 
 		// {topic_id}
 		socket.on('joinChatRoom', function(msg) {
-			console.log('joined room');
-			console.log(msg.topic_id);
 			socket.join(msg.topic_id);
 		});
 
@@ -231,7 +229,7 @@ gulp.task('serve', ['sass'], function() {
 				{_id:topicObjectId}, 
 				{$push : {messages : {num : msg.num, player:msg.player, message:msg.message, time:msg.time} }}
 				);
-			io.to(msg.topic_id).emit('newMessage', msg);
+			io.to(msg.topic_id).emit('newMessageAdded', msg);
 		});
 
 		socket.on('disconnect', function()

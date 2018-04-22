@@ -17,7 +17,7 @@ $(document).ready(function(){
         });
     }
 
-    socket.on('getConversationsList', function(msg)
+    socket.on('sendConversationsList', function(msg)
     {
         dmConversationsList = msg
         updateConversationList();
@@ -30,13 +30,13 @@ $(document).ready(function(){
     }
     writeFormEntryButton();
 
-    socket.on('newConversation', function(msg) {
+    socket.on('newConversationAdded', function(msg) {
         socket.emit('getConversationsList', {playerName:playerName});
     });
 
     $("#formEntry").on('click', '#startConversationButton', function(event)
     {
-        socket.on('getFullPlayerList', function(msg)
+        socket.on('sendFullPlayerList', function(msg)
         {
             players = msg;
             $.get('/html/startConversationForm.ejs', function(template)

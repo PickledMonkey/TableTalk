@@ -8,11 +8,6 @@ $(document).ready(function(){
     //     $("#userInputForm").load("/src/html/playerForm.html");
 
     // });
-    socket.on('getConversationsList', function(msg)
-    {
-        dmConversationsList = msg
-        updateConversationList();
-    });
 
     $("#playerSelectButton").click(function(){
         $("#userInputForm").load("html/playerForm.html");
