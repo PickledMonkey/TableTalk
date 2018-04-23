@@ -132,6 +132,9 @@ gulp.task('serve', ['sass'], function() {
 		// {playerName, playerType}
 		socket.on('playerConnect', function(msg)
 		{
+			console.log('playerConnect');
+			console.log({msg:msg, id:socket.id});
+
 			mongoDB.collection(playerCollectionName).find({name: msg.playerName}).count().then(function(numItems) {
 				if (numItems == 0)
 				{
@@ -149,10 +152,15 @@ gulp.task('serve', ['sass'], function() {
 			});
 			socketPlayers[socket.id] = msg.playerName;
 			playerSockets[msg.playerName] = socket.id;
+
+			socket.emit('playerConnectStatus', {status:1});
 		});
 
 		// {}
 		socket.on('getFullPlayerList', function(msg) {
+			console.log('getFullPlayerList');
+			console.log(msg);
+
 			//check dm name and return list of players associated with dm
 			var allPlayersCursor = mongoDB.collection(playerCollectionName).find({}).project({_id:0, conversations:0});
 			allPlayersCursor.toArray(function(err, result){
@@ -163,6 +171,9 @@ gulp.task('serve', ['sass'], function() {
 
 		// {playerName}
 		socket.on('getConversationsList', function(msg) {
+			console.log('getConversationsList');
+			console.log(msg);
+
 			mongoDB.collection(playerCollectionName).findOne({name: msg.playerName}).then(function(playerData) {
 
 				var conversations = mongoDB.collection(conversationCollectionName)
@@ -181,6 +192,9 @@ gulp.task('serve', ['sass'], function() {
 
 		// {topic, players, dungeonMaster}
 		socket.on('newConversation', function(msg) {
+			console.log('newConversation');
+			console.log(msg);
+
 			mongoDB.collection(conversationCollectionName).insertOne(
 				{topic:msg.topic, dungeonMaster: msg.dungeonMaster, players:msg.players, messages:[]}, function(err, res) {
 				if (err) throw err;
@@ -209,20 +223,29 @@ gulp.task('serve', ['sass'], function() {
 
 		// {topic_id}
 		socket.on('getConversationInfo', function(msg) {
+			console.log('getConversationInfo');
+			console.log(msg);
+
 			var topicObjectId = new ObjectId(msg.topic_id);
 			conversation = mongoDB.collection(conversationCollectionName).findOne({_id: topicObjectId}).then(function(conversation) {
 				socket.emit('sendConversationInfo', conversation);
 			});
 		});
 
-		// {topic_id}
+		// {player, topic_id}
 		socket.on('joinChatRoom', function(msg) {
+			console.log('joinChatRoom');
+			console.log(msg);
+
 			socket.join(msg.topic_id);
+			io.to(msg.topic_id).emit('joinChatRoomStatus', {player:msg.player, status:'joined'})
 		});
 
-		// {topic_id, player, message, num, time}
+		// {topic_id, player, message, num}
 		socket.on('newMessage', function(msg) {
+			console.log('newMessage');
 			console.log(msg);
+
 			var topicObjectId = new ObjectId(msg.topic_id);
 			msg.time = new Date();
 			mongoDB.collection(conversationCollectionName).update(
@@ -234,6 +257,8 @@ gulp.task('serve', ['sass'], function() {
 
 		socket.on('disconnect', function()
 		{
+			console.log('disconnect');
+			console.log(socket.id);
 			if (socket.id in socketPlayers)
 			{
 				var player = socketPlayers;

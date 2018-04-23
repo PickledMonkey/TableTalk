@@ -8,7 +8,7 @@ $(document).ready(function(){
     var conversation = {};
 
     socket.emit('playerConnect', {playerName:playerName, playerType:'dungeonMaster'});
-    socket.emit('joinChatRoom', {topic_id:topicId});
+    socket.emit('joinChatRoom', {topic_id:topicId, player:playerName});
 
     function updatePlayerList()
     {
