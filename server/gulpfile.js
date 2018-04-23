@@ -14,46 +14,9 @@ var MongoClient = mongo.MongoClient;
 
 var mongoUrl = "mongodb://127.0.0.1:27017";
 
-
-// var allPlayersList = ['Player1', 'Player2', 'Player3', 'Player4'];
-// var dmConversationsList = [
-// 	    {topic:'Topic1', dungeonMaster:'Player0', players:['Player1', 'Player2']}, 
-// 	    {topic:'Topic2', dungeonMaster:'Player0', players:['Player2', 'Player3', 'Player4']}
-//     ];
-// var messageList = {
-// 		'Topic1': {
-// 			dungeonMaster: 'Player4',
-// 			players: ['Player1', 'Player2', 'Player3'],
-// 			messages: [
-// 				{id: 0, player:'Player1', message:'Yo Yo Yo!', time:'10:00'},
-// 				{id: 1, player:'Player2', message:'What\'s up brah?', time:'10:01'},
-// 				{id: 2, player:'Player1', message:'Not much man, just hanging out', time:'10:02'},
-// 				{id: 3, player:'Player3', message:'Watch out! I see a cupcake!', time:'11:33'},
-// 				{id: 4, player:'Player2', message:'Chill dude. It\'s nothing big.', time:'11:33'},
-// 				{id: 5, player:'Player4', message:'You are all dead.', time:'12:00'},
-// 				{id: 6, player:'Player1', message:'...', time:'12:01'},
-// 				{id: 7, player:'Player2', message:'this game stinks...', time:'12:01'},
-// 				{id: 8, player:'Player3', message:'bro... why?', time:'12:02'}
-// 			]	
-// 		},
-// 		'Topic2': {
-// 			dungeonMaster: 'Player4',
-// 			players: ['Player1'],
-// 			messages: [
-// 				{id: 0, player:'Player4', message:'You looted a sick axe!', time:'10:00'},
-// 				{id: 1, player:'Player1', message:'Sweet! I want to sell', time:'10:01'},
-// 				{id: 2, player:'Player4', message:'Don\'t you want to give it to the barbarian?', time:'10:02'},
-// 				{id: 3, player:'Player1', message:'No. That guy\'s a jerk.', time:'10:02'},
-// 				{id: 4, player:'Player4', message:'lol k. You get 12gp', time:'10:04'}
-// 			]
-// 		}
-// 	};
-// var players = {'player1':'whatever', 'player2':'whatever2'};
-
 var playerCollectionName = 'players';
 var conversationCollectionName = 'conversations';
 var messagesCollectionName = 'messages';
-
 
 
 // Compile sass into CSS & auto-inject into browsers
@@ -76,15 +39,8 @@ gulp.task('js', function() {
         .pipe(browserSync.stream());
 });
 
-// Static Server + watching scss/html files
+// MAIN
 gulp.task('serve', ['sass'], function() {
-
-    // browserSync.init({
-    //     server: "./src"  
-    // });
-
-    // gulp.watch(['node_modules/bootstrap/scss/bootstrap.scss', 'src/scss/*.scss'], ['sass']);
-    // gulp.watch("src/*.html").on('change', browserSync.reload);
 
     var mongoDB;
     MongoClient.connect(mongoUrl, function(err, client)
@@ -112,8 +68,7 @@ gulp.task('serve', ['sass'], function() {
 	app.post('/dmConversations/', function (req, res) {
 		res.render('pages/conversations', req.body);
 	});
-///users/:userId/books/:bookId
-//https://expressjs.com/en/guide/routing.html
+
 	app.get('/dmConversations/chat/:topic_id/:playerName', function(req, res) {
 		var topicObjectId = new ObjectId(req.params.topic_id);
 		mongoDB.collection(conversationCollectionName).findOne({ _id:topicObjectId}).then(function(conversationInfo) {
@@ -123,9 +78,6 @@ gulp.task('serve', ['sass'], function() {
 			console.log(error);
 		});
 	});
-
-	// var playerSockets = {};
-	// var socketPlayers = {};
 
 	io.on('connection', function(socket) {
 
@@ -150,8 +102,7 @@ gulp.task('serve', ['sass'], function() {
 			}).catch(function(error) {
 				console.log(error);
 			});
-			// socketPlayers[socket.id] = msg.playerName;
-			// playerSockets[msg.playerName] = socket.id;
+
 			socket.join(msg.playerName);
 
 			socket.emit('playerConnectStatus', {status:1});
@@ -162,7 +113,6 @@ gulp.task('serve', ['sass'], function() {
 			console.log('getFullPlayerList');
 			console.log(msg);
 
-			//check dm name and return list of players associated with dm
 			var allPlayersCursor = mongoDB.collection(playerCollectionName).find({}).project({_id:0, conversations:0});
 			allPlayersCursor.toArray(function(err, result){
 				if (err) throw err;
@@ -206,20 +156,12 @@ gulp.task('serve', ['sass'], function() {
 					{ name: player },
 	   				{ $push: { conversations: res.ops[0]._id}});
 					io.to(player).emit('newConversationAdded', msg);
-	   	// 			if (player in playerSockets)
-					// {
-					// 	io.to(playerSockets[player]).emit('newConversationAdded', msg);
-					// }	
 				}
 
    				mongoDB.collection(playerCollectionName).update(
 				{ name: msg.dungeonMaster},
    				{ $push: { conversations: res.ops[0]._id}});
    				io.to(msg.dungeonMaster).emit('newConversationAdded', msg);
-   	// 			if (msg.dungeonMaster in playerSockets)
-				// {
-				// 	io.to(msg.dungeonMaster).emit('newConversationAdded', msg);
-				// }
 			});
 		});
 
@@ -261,20 +203,8 @@ gulp.task('serve', ['sass'], function() {
 		{
 			console.log('disconnect');
 			console.log(socket.id);
-			// if (socket.id in socketPlayers)
-			// {
-			// 	var player = socketPlayers;
-			// 	if (player in playerSockets)
-			// 	{
-			// 		delete playerSockets[player];
-			// 	}
-			// 	delete socketPlayers[socket.id];
-			// }
 		});
 	});
-
-
-
 
 	http.listen(3000, function(){
 	  console.log('listening on *:3000');
