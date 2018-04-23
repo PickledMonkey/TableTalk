@@ -129,7 +129,13 @@ public class ChatList extends ListActivity {
                 return;
             }
             System.out.println("got chats");
-            mTopicListAdapter.notifyDataSetChanged();
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mTopicListAdapter.notifyDataSetChanged();
+                }
+            });
         }
     };
 

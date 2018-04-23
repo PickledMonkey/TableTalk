@@ -124,8 +124,8 @@ gulp.task('serve', ['sass'], function() {
 		});
 	});
 
-	var playerSockets = {};
-	var socketPlayers = {};
+	// var playerSockets = {};
+	// var socketPlayers = {};
 
 	io.on('connection', function(socket) {
 
@@ -150,8 +150,9 @@ gulp.task('serve', ['sass'], function() {
 			}).catch(function(error) {
 				console.log(error);
 			});
-			socketPlayers[socket.id] = msg.playerName;
-			playerSockets[msg.playerName] = socket.id;
+			// socketPlayers[socket.id] = msg.playerName;
+			// playerSockets[msg.playerName] = socket.id;
+			socket.join(msg.playerName);
 
 			socket.emit('playerConnectStatus', {status:1});
 		});
@@ -204,20 +205,21 @@ gulp.task('serve', ['sass'], function() {
 					mongoDB.collection(playerCollectionName).update(
 					{ name: player },
 	   				{ $push: { conversations: res.ops[0]._id}});
-
-	   				if (player in playerSockets)
-					{
-						socket.broadcast.to(playerSockets[player]).emit('newConversationAdded', msg);
-					}	
+					io.to(player).emit('newConversationAdded', msg);
+	   	// 			if (player in playerSockets)
+					// {
+					// 	io.to(playerSockets[player]).emit('newConversationAdded', msg);
+					// }	
 				}
 
    				mongoDB.collection(playerCollectionName).update(
 				{ name: msg.dungeonMaster},
    				{ $push: { conversations: res.ops[0]._id}});
-   				if (msg.dungeonMaster in playerSockets)
-				{
-					socket.broadcast.to(msg.dungeonMaster).emit('newConversationAdded', msg);
-				}
+   				io.to(msg.dungeonMaster).emit('newConversationAdded', msg);
+   	// 			if (msg.dungeonMaster in playerSockets)
+				// {
+				// 	io.to(msg.dungeonMaster).emit('newConversationAdded', msg);
+				// }
 			});
 		});
 
@@ -259,15 +261,15 @@ gulp.task('serve', ['sass'], function() {
 		{
 			console.log('disconnect');
 			console.log(socket.id);
-			if (socket.id in socketPlayers)
-			{
-				var player = socketPlayers;
-				if (player in playerSockets)
-				{
-					delete playerSockets[player];
-				}
-				delete socketPlayers[socket.id];
-			}
+			// if (socket.id in socketPlayers)
+			// {
+			// 	var player = socketPlayers;
+			// 	if (player in playerSockets)
+			// 	{
+			// 		delete playerSockets[player];
+			// 	}
+			// 	delete socketPlayers[socket.id];
+			// }
 		});
 	});
 

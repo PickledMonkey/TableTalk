@@ -273,7 +273,7 @@ public class MainFragment extends Fragment {
         }
 
         mInputMessageView.setText("");
-        addMessage(mUsername, message);
+//        addMessage(mUsername, message); don't post it to the board until the server confirms
 
         JSONObject msg = new JSONObject();
         try {
