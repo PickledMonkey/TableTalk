@@ -24,30 +24,22 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
-
-
 
 /**
  * A chat fragment containing messages view and input form.
  */
 public class MainFragment extends Fragment {
-
     private static final String TAG = "MainFragment";
-
     private static final int REQUEST_LOGIN = 0;
     private static final int REQUEST_TOPIC = 0;
     private static final int TYPING_TIMER_LENGTH = 600;
-
     private RecyclerView mMessagesView;
     private EditText mInputMessageView;
     private List<Message> mMessages = new ArrayList<Message>();
@@ -59,13 +51,10 @@ public class MainFragment extends Fragment {
     public String conversation[] = {};
     private String mTopic;
     private String mTopicId;
-
     private Boolean isConnected = true;
-
     public MainFragment() {
         super();
     }
-
 
     // This event fires 1st, before creation of fragment or any views
     // The onAttach method is called when the Fragment instance is associated with an Activity.
@@ -82,9 +71,6 @@ public class MainFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-
         setHasOptionsMenu(true);
         ChatApplication app = (ChatApplication) getActivity().getApplication();
         mSocket = app.getSocket();
@@ -92,15 +78,10 @@ public class MainFragment extends Fragment {
         mSocket.on(Socket.EVENT_DISCONNECT,onDisconnect);
         mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
         mSocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectError);
-
         mSocket.on("newMessageAdded", onNewMessage);
         mSocket.on("sendConversationInfo", onSendConversationInfo);
-
-
         mSocket.connect();
-
         startSignIn();
-
     }
 
     @Override
@@ -112,7 +93,6 @@ public class MainFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         mSocket.disconnect();
         mSocket.off(Socket.EVENT_CONNECT, onConnect);
         mSocket.off(Socket.EVENT_DISCONNECT, onDisconnect);
@@ -125,11 +105,9 @@ public class MainFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         mMessagesView = (RecyclerView) view.findViewById(R.id.messages);
         mMessagesView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mMessagesView.setAdapter(mAdapter);
-
         mInputMessageView = (EditText) view.findViewById(R.id.message_input);
         mInputMessageView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -155,7 +133,6 @@ public class MainFragment extends Fragment {
                     mTyping = true;
                     mSocket.emit("typing");
                 }
-
                 mTypingHandler.removeCallbacks(onTypingTimeout);
                 mTypingHandler.postDelayed(onTypingTimeout, TYPING_TIMER_LENGTH);
             }
@@ -164,7 +141,6 @@ public class MainFragment extends Fragment {
             public void afterTextChanged(Editable s) {
             }
         });
-
         ImageButton sendButton = (ImageButton) view.findViewById(R.id.send_button);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -183,17 +159,14 @@ public class MainFragment extends Fragment {
         }
         mUsername = data.getStringExtra("username");
         int numUsers = data.getIntExtra("numUsers", 1);
-
         String prevActivity = data.getStringExtra("from");
         System.out.println(prevActivity);
         if("chatlist".equals(prevActivity))
         {
             mTopic = data.getStringExtra("topic");
             mTopicId = data.getStringExtra("topic_id");
-
             System.out.println("TOPIC:" + mTopic);
             System.out.println("TOPIC_ID:" + mTopicId);
-
             startChat(mTopic, mTopicId);
             addLog(mTopic);
             addParticipantsLog(mTopic);
@@ -202,7 +175,6 @@ public class MainFragment extends Fragment {
             selectTopic();
         }
     }
-
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -215,13 +187,11 @@ public class MainFragment extends Fragment {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_leave) {
             leave();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -273,8 +243,6 @@ public class MainFragment extends Fragment {
         }
 
         mInputMessageView.setText("");
-//        addMessage(mUsername, message); don't post it to the board until the server confirms
-
         JSONObject msg = new JSONObject();
         try {
             //{topic_id, player, message, num}
@@ -285,7 +253,6 @@ public class MainFragment extends Fragment {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         // perform the sending message attempt.
         mSocket.emit("newMessage", msg);
     }
@@ -294,14 +261,12 @@ public class MainFragment extends Fragment {
         mUsername = null;
         Intent intent = new Intent(getActivity(), LoginActivity.class);
         startActivityForResult(intent, REQUEST_LOGIN);
-
     }
 
     private void selectTopic() {
         mTopic = null;
         Intent intent = new Intent(getActivity(), ChatList.class);
         intent.putExtra("username", mUsername);
-
         startActivityForResult(intent, REQUEST_TOPIC);
     }
 
@@ -316,7 +281,6 @@ public class MainFragment extends Fragment {
         }
         mSocket.emit("joinChatRoom", msg);
         mSocket.emit("getConversationInfo", msg);
-
         System.out.println("starting chat");
     }
 
@@ -395,7 +359,6 @@ public class MainFragment extends Fragment {
                         Log.e(TAG, e.getMessage());
                         return;
                     }
-
                     removeTyping(username);
                     addMessage(username, message);
                 }
@@ -416,10 +379,8 @@ public class MainFragment extends Fragment {
     private Emitter.Listener onSendConversationInfo = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-
             try {
                 System.out.println("getting conversation info");
-
                 JSONObject conversationInfo = (JSONObject) args[0];
                 JSONArray messageList= conversationInfo.getJSONArray("messages");
 
