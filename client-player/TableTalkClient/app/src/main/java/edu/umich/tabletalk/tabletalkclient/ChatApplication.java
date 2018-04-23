@@ -18,7 +18,6 @@ public class ChatApplication extends Application {
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }catch (Exception e){
-            System.out.println("Errorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
             System.out.println(e);
         }
     }
