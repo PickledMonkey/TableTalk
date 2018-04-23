@@ -2,8 +2,11 @@ var socket = io();
 
 $(document).ready(function(){
 
+    var playerName = $('#playerName').text();
     var players = [];
     var dmConversationsList = {};
+
+    socket.emit('playerConnect', {playerName:playerName, playerType:'dungeonMaster'});
 
     function updateConversationList()
     {
@@ -14,12 +17,12 @@ $(document).ready(function(){
         });
     }
 
-    socket.on('getConversationsList', function(msg)
+    socket.on('sendConversationsList', function(msg)
     {
         dmConversationsList = msg
         updateConversationList();
     });
-    socket.emit('getConversationsList');
+    socket.emit('getConversationsList', {playerName:playerName});
  
     function writeFormEntryButton()
     {
@@ -27,14 +30,18 @@ $(document).ready(function(){
     }
     writeFormEntryButton();
 
+    socket.on('newConversationAdded', function(msg) {
+        socket.emit('getConversationsList', {playerName:playerName});
+    });
+
     $("#formEntry").on('click', '#startConversationButton', function(event)
     {
-        socket.on('getFullPlayerList', function(msg)
+        socket.on('sendFullPlayerList', function(msg)
         {
             players = msg;
             $.get('/html/startConversationForm.ejs', function(template)
             {
-                var str = ejs.render(template, {players: players});
+                var str = ejs.render(template, {players: players, thisPlayer:playerName});
                 $("#formEntry").html(str);
             });
         });
@@ -44,13 +51,18 @@ $(document).ready(function(){
     $("#formEntry").on('submit', '#newConversationForm',  function(event)
     {
         event.preventDefault();
-        alert('Make a new conversation');
+        msg = {};
+        msg.topic = $('#topicName').val();
+        msg.players = $('#selectPlayers option').map(function() { return $(this).val(); }).get();
+        msg.dungeonMaster = playerName;
+
+        socket.emit('newConversation', msg);
         writeFormEntryButton();
     });
 
     $("#conversationList").on('click', 'li', function()
     {
-        window.location.href= 'chat/'+$(this).attr('id');
+        window.location.href= 'chat/'+$(this).attr('id') + '/' +playerName;
     });
     
 });

@@ -2,7 +2,13 @@ var socket = io();
 
 $(document).ready(function(){
 
+    var playerName = $('#playerName').text();
+    var topic = $('#topic').text();
+    var topicId = $('#topic').attr('name');
     var conversation = {};
+
+    socket.emit('playerConnect', {playerName:playerName, playerType:'dungeonMaster'});
+    socket.emit('joinChatRoom', {topic_id:topicId, player:playerName});
 
     function updatePlayerList()
     {
@@ -16,7 +22,9 @@ $(document).ready(function(){
     function updateChatMessageList()
     {
         conversation.messages.sort(function(a, b) {
-            return a.id - b.id;
+            a = new Date(b.time);
+            b = new Date(a.time);
+            return a>b ? -1 : a<b ? 1 : 0;
         });
 
         $.get('/html/chatMessageList.ejs', function(template)
@@ -26,11 +34,36 @@ $(document).ready(function(){
         });
     }
 
-    socket.on('getConversationInfo', function(msg) {
+    // newMessage
+    socket.on('newMessageAdded', function(msg) {
+        conversation.messages.push(msg);
+        updateChatMessageList();
+    });
+
+    $("#messageForm").submit(function(event) {
+        event.preventDefault();
+        msg = {};
+        if ($.trim( $('#messageInput').val() ) == '')
+        {
+            return; //ignore blank input
+        }
+        msg.message = $("#messageInput").val();
+        msg.topic_id = topicId;
+        msg.num = conversation.messages.length;
+        msg.player = playerName;
+
+        $("#messageInput").val("");
+        socket.emit('newMessage', msg);
+    });
+
+    // getConversationInfo
+    socket.on('sendConversationInfo', function(msg) {
         conversation = msg;
         updatePlayerList();   
         updateChatMessageList();
     });
-    socket.emit('getConversationInfo');
+    socket.emit('getConversationInfo', {topic_id:topicId});
+
+
 
 });
