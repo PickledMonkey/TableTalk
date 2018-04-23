@@ -4,7 +4,7 @@ $(document).ready(function(){
 
     var playerName = $('#playerName').text();
     var players = [];
-    var dmConversationsList = {};
+    var dmConversationsList = [];
 
     socket.emit('playerConnect', {playerName:playerName, playerType:'dungeonMaster'});
 
@@ -53,8 +53,11 @@ $(document).ready(function(){
         event.preventDefault();
         msg = {};
         msg.topic = $('#topicName').val();
-        msg.players = $('#selectPlayers option').map(function() { return $(this).val(); }).get();
+        msg.players = $('#selectPlayers option:selected').map(function() { 
+            return $(this).val(); 
+        }).get();
         msg.dungeonMaster = playerName;
+        console.log(msg);
 
         socket.emit('newConversation', msg);
         writeFormEntryButton();
